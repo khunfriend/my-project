@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
+
+# Virtual Environment
+env/
+venv/
+ENV/
+.venv/
+
+# VS Code
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Environment variables
+.env
+
+# Static files (optional)
+staticfiles/
+
+# Migrations (เลือกได้)
+# */migrations/*
+# !*/migrations/__init__.py
