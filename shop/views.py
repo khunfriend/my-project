@@ -1,15 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from django.http import JsonResponse
 from .models import Plant, Order
 import json
-
-
-@staff_member_required
-def dashboard(request):
-    orders = Order.objects.all().order_by('-created_at')
-    return render(request, 'dashboard.html', {'orders': orders})
 
 
 def add_plant(request):
@@ -36,7 +29,6 @@ def buy_plant(request, plant_id):
     return redirect('home')
 
 
-# ✅ View ใหม่ รับทั้งตะกร้า
 @login_required
 def buy_cart(request):
     if request.method == 'POST':
@@ -50,15 +42,10 @@ def buy_cart(request):
             plant_id = item.get('id')
             quantity = int(item.get('quantity', 1))
             plant = get_object_or_404(Plant, id=plant_id)
-
             if plant.stock >= quantity:
                 plant.stock -= quantity
                 plant.save()
-                Order.objects.create(
-                    user=request.user,
-                    plant=plant,
-                    quantity=quantity
-                )
+                Order.objects.create(user=request.user, plant=plant, quantity=quantity)
 
     return redirect('home')
 
