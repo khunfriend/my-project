@@ -6,9 +6,28 @@
   <title>Plant Shop</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .colgreen { background-color: rgb(25, 124, 25); }
+    .colgreli { background-color: rgb(36, 221, 36); }
+    .colwhite { color: rgb(255, 255, 255) !important; font-weight: bold !important; font-size: 20px !important; }
+    .shadow { box-shadow: 4px 4px 10px rgba(12, 2, 2, 0.2) !important; }
+    .fz-m { font-size: 25px !important; font-weight: bold !important; }
+    .fz-s { font-size: 15px !important; }
+
+    /* Cart bounce animation */
+    @keyframes bounceIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      70% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
     }
+    .bounce { animation: bounceIn 0.3s ease; }
+
+    /* Cart slide up */
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .slide-up { animation: slideUp 0.3s ease; }
   </style>
 </head>
 
@@ -16,22 +35,21 @@
 
 <!-- NAV -->
 <nav class="border-b border-gray-200">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 colgreen">
     <div class="flex justify-between h-16">
       <div class="flex items-center">
-        <h1 class="text-lg font-medium">🌿 Plants</h1>
+        <h1 class="text-lg font-medium colwhite">🌿 Plants Oasis</h1>
       </div>
-
       <div class="flex items-center space-x-4">
         {% if user.is_authenticated %}
-          <span class="text-sm text-gray-600">{{ user.username }}</span>
+          <span class="text-sm colwhite">{{ user.username }}</span>
           {% if user.is_staff %}
-            <a href="{% url 'dashboard' %}" class="text-sm text-gray-600 hover:text-gray-900">Dashboard</a>
-            <a href="{% url 'add_plant' %}" class="text-sm text-gray-600 hover:text-gray-900">Add Plant</a>
+            <a href="{% url 'dashboard' %}" class="text-sm colwhite">Dashboard</a>
+            <a href="{% url 'add_plant' %}" class="text-sm colwhite">Add Plant</a>
           {% endif %}
-          <a href="/logout/" class="text-sm text-gray-600 hover:text-gray-900">Logout</a>
+          <a href="/logout/" class="text-sm colwhite">Logout</a>
         {% else %}
-          <a href="/login/" class="text-sm text-gray-600 hover:text-gray-900">Login</a>
+          <a href="/login/" class="text-sm colwhite">Login</a>
         {% endif %}
       </div>
     </div>
@@ -40,31 +58,34 @@
 
 <!-- HEADER -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-  <h2 class="text-3xl font-light text-gray-900 mb-2">Plants</h2>
-  <p class="text-gray-600 text-sm">Choose your favorite plant</p>
+  <h2 class="text-3xl font-light text-gray-900 mb-2">Plants: "He who plants a tree, plants a hope." — Lucy Larcom</h2>
+  <p class="text-gray-600 text-sm">Pick the tree you love, and let hope grow</p>
 </div>
 
 <!-- GRID -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-
   {% for plant in plants %}
-    <div class="bg-white">
-      <h3 class="text-lg font-light text-gray-900 px-6 pt-6">{{ plant.name }}</h3>
-
+    <div class="bg-white shadow">
+      <h3 class="text-lg font-light text-gray-900 px-6 pt-6 fz-m">{{ plant.name }}</h3>
       <div class="px-6 pb-6">
-        <p class="text-sm text-gray-600 mb-1">฿{{ plant.price }}</p>
-        <p class="text-xs text-gray-500 mb-4">Stock: {{ plant.stock }}</p>
+        <p class="text-sm text-gray-600 mb-1 fz-s">฿{{ plant.price }}</p>
 
         {% if plant.stock > 0 %}
           {% if user.is_authenticated and not user.is_staff %}
-            <a href="{% url 'buy_plant' plant.id %}"
-               class="block text-center text-sm text-gray-900 hover:text-gray-600 py-2 border border-gray-300 hover:border-gray-400 rounded">
+            <p class="text-xs text-gray-500 mb-4">Stock: {{ plant.stock }}</p>
+            <button
+              data-id="{{ plant.id }}"
+              data-name="{{ plant.name }}"
+              data-stock="{{ plant.stock }}"
+              data-price="{{ plant.price }}"
+              onclick="openModal(this)"
+              class="block w-full text-center text-sm text-gray-900 hover:text-gray-600 py-2 border border-gray-300 hover:border-gray-400 rounded colgreli fz-s">
               Buy
-            </a>
+            </button>
           {% elif not user.is_authenticated %}
             <a href="/login/"
-               class="block text-center text-sm text-gray-900 hover:text-gray-600 py-2 border border-gray-300 hover:border-gray-400 rounded">
+               class="block text-center text-sm text-gray-900 py-2 border border-gray-300 rounded colgreli fz-s">
               Login to buy
             </a>
           {% endif %}
@@ -83,9 +104,220 @@
   {% empty %}
     <p class="text-gray-500 text-sm">No plants available</p>
   {% endfor %}
-
   </div>
 </div>
+
+
+<!-- ===================== MODAL เลือกจำนวน ===================== -->
+<div id="buyModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-lg p-8 w-full max-w-sm shadow-lg">
+    <h3 class="text-lg font-medium text-gray-900 mb-1">Buy Plant</h3>
+    <p id="modalPlantName" class="text-sm text-gray-500 mb-6"></p>
+
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+      <input type="number" id="quantityInput" min="1" value="1" required
+             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500">
+      <p id="stockInfo" class="text-xs text-gray-400 mt-1"></p>
+    </div>
+
+    <div class="flex gap-3">
+      <!-- ✅ Confirm = เพิ่มเข้าตะกร้า ไม่ได้ submit form -->
+      <button onclick="addToCart()"
+              class="flex-1 bg-gray-900 text-white py-2 rounded-md hover:bg-gray-800 text-sm">
+        Confirm
+      </button>
+      <button onclick="closeModal()"
+              class="flex-1 border border-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-50 text-sm">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== ตะกร้า (ขวาล่าง) ===================== -->
+<div id="cartWidget" class="fixed bottom-6 right-6 z-40 hidden slide-up">
+  <button onclick="toggleCartPanel()"
+          class="relative bg-green-700 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:bg-green-800 text-2xl">
+    🛒
+    <span id="cartBadge"
+          class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">
+      0
+    </span>
+  </button>
+</div>
+
+<!-- ===================== Cart Panel ===================== -->
+<div id="cartPanel" class="fixed bottom-24 right-6 z-40 hidden w-80 bg-white rounded-lg shadow-xl border border-gray-200">
+  <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+    <h3 class="font-medium text-gray-900">🛒 Cart</h3>
+    <button onclick="toggleCartPanel()" class="text-gray-400 hover:text-gray-600 text-lg">✕</button>
+  </div>
+
+  <div id="cartItems" class="p-4 max-h-64 overflow-y-auto">
+    <p class="text-sm text-gray-400 text-center">Cart is empty</p>
+  </div>
+
+  <div class="p-4 border-t border-gray-200">
+    <div class="flex justify-between items-center mb-3">
+      <span class="text-sm font-medium text-gray-700">Total</span>
+      <span id="cartTotal" class="text-lg font-medium text-gray-900">฿0</span>
+    </div>
+
+    <!-- ✅ Form สำหรับ submit ทั้งตะกร้าไปหลังบ้าน -->
+    <form method="POST" action="/shop/buy-cart/" id="cartForm">
+      {% csrf_token %}
+      <input type="hidden" name="cart_data" id="cartDataInput">
+      <button type="submit" onclick="prepareCartSubmit()"
+              class="w-full bg-gray-900 text-white py-2 rounded-md hover:bg-gray-800 text-sm">
+        ยืนยันการสั่งซื้อ
+      </button>
+    </form>
+
+    <button onclick="clearCart()"
+            class="w-full mt-2 text-xs text-gray-400 hover:text-red-500">
+      ล้างตะกร้า
+    </button>
+  </div>
+</div>
+
+
+<!-- ===================== JavaScript ===================== -->
+<script>
+  // State
+  let currentPlant = {};
+  let cart = []; // [{ id, name, price, quantity }]
+
+  // ---------- Modal ----------
+  function openModal(btn) {
+    currentPlant = {
+      id: btn.dataset.id,
+      name: btn.dataset.name,
+      stock: parseInt(btn.dataset.stock),
+      price: parseInt(btn.dataset.price),
+    };
+    document.getElementById('modalPlantName').textContent = currentPlant.name;
+    document.getElementById('stockInfo').textContent = 'Stock available: ' + currentPlant.stock;
+    document.getElementById('quantityInput').max = currentPlant.stock;
+    document.getElementById('quantityInput').value = 1;
+    document.getElementById('buyModal').classList.remove('hidden');
+  }
+
+  function closeModal() {
+    document.getElementById('buyModal').classList.add('hidden');
+  }
+
+  // ---------- Add to Cart ----------
+  function addToCart() {
+    const qty = parseInt(document.getElementById('quantityInput').value);
+    if (!qty || qty < 1) return;
+
+    // ตรวจว่ามีในตะกร้าแล้วหรือยัง (same plant id)
+    const existing = cart.find(item => item.id === currentPlant.id);
+    if (existing) {
+      existing.quantity += qty;
+    } else {
+      cart.push({
+        id: currentPlant.id,
+        name: currentPlant.name,
+        price: currentPlant.price,
+        quantity: qty,
+      });
+    }
+
+    closeModal();
+    renderCart();
+    showCartWidget();
+    flashCartBadge();
+  }
+
+  // ---------- Render Cart ----------
+  function renderCart() {
+    const container = document.getElementById('cartItems');
+    const totalEl = document.getElementById('cartTotal');
+    const badge = document.getElementById('cartBadge');
+
+    if (cart.length === 0) {
+      container.innerHTML = '<p class="text-sm text-gray-400 text-center">Cart is empty</p>';
+      totalEl.textContent = '฿0';
+      badge.classList.add('hidden');
+      return;
+    }
+
+    let total = 0;
+    let totalQty = 0;
+    let html = '';
+
+    cart.forEach((item, index) => {
+      const subtotal = item.price * item.quantity;
+      total += subtotal;
+      totalQty += item.quantity;
+      html += `
+        <div class="flex justify-between items-center mb-3">
+          <div>
+            <p class="text-sm font-medium text-gray-900">${item.name}</p>
+            <p class="text-xs text-gray-400">฿${item.price} × ${item.quantity}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-700">฿${subtotal}</span>
+            <button onclick="removeFromCart(${index})" class="text-gray-300 hover:text-red-400 text-xs">✕</button>
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+    totalEl.textContent = '฿' + total;
+    badge.textContent = totalQty;
+    badge.classList.remove('hidden');
+  }
+
+  function removeFromCart(index) {
+    cart.splice(index, 1);
+    renderCart();
+    if (cart.length === 0) hideCartPanel();
+  }
+
+  function clearCart() {
+    cart = [];
+    renderCart();
+    hideCartPanel();
+  }
+
+  // ---------- Cart Widget ----------
+  function showCartWidget() {
+    const widget = document.getElementById('cartWidget');
+    widget.classList.remove('hidden');
+    widget.classList.add('bounce');
+    setTimeout(() => widget.classList.remove('bounce'), 300);
+  }
+
+  function toggleCartPanel() {
+    document.getElementById('cartPanel').classList.toggle('hidden');
+  }
+
+  function hideCartPanel() {
+    document.getElementById('cartPanel').classList.add('hidden');
+    document.getElementById('cartWidget').classList.add('hidden');
+  }
+
+  function flashCartBadge() {
+    const badge = document.getElementById('cartBadge');
+    badge.classList.add('bounce');
+    setTimeout(() => badge.classList.remove('bounce'), 300);
+  }
+
+  // ---------- Submit ----------
+  function prepareCartSubmit() {
+    document.getElementById('cartDataInput').value = JSON.stringify(cart);
+  }
+
+  // ESC ปิด modal
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+</script>
 
 </body>
 </html>

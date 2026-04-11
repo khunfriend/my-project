@@ -1,73 +1,80 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Plant
+from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.http import JsonResponse
+from .models import Plant, Order
+import json
+
 
 @staff_member_required
 def dashboard(request):
     orders = Order.objects.all().order_by('-created_at')
     return render(request, 'dashboard.html', {'orders': orders})
-# ---------------- ADD ----------------
+
+
 def add_plant(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         price = request.POST.get('price')
         stock = request.POST.get('stock')
-
         Plant.objects.create(name=name, price=price, stock=stock)
         return redirect('home')
-
     return render(request, 'add_plant.html')
 
 
-# ---------------- BUY ----------------
+@login_required
 def buy_plant(request, plant_id):
     plant = get_object_or_404(Plant, id=plant_id)
+    if request.method == 'POST':
+        quantity = int(request.POST.get('quantity', 1))
+        if quantity < 1:
+            quantity = 1
+        if plant.stock >= quantity:
+            plant.stock -= quantity
+            plant.save()
+            Order.objects.create(user=request.user, plant=plant, quantity=quantity)
+    return redirect('home')
 
-    if plant.stock > 0:
-        plant.stock -= 1
-        plant.save()
+
+# ✅ View ใหม่ รับทั้งตะกร้า
+@login_required
+def buy_cart(request):
+    if request.method == 'POST':
+        cart_data = request.POST.get('cart_data', '[]')
+        try:
+            cart = json.loads(cart_data)
+        except:
+            return redirect('home')
+
+        for item in cart:
+            plant_id = item.get('id')
+            quantity = int(item.get('quantity', 1))
+            plant = get_object_or_404(Plant, id=plant_id)
+
+            if plant.stock >= quantity:
+                plant.stock -= quantity
+                plant.save()
+                Order.objects.create(
+                    user=request.user,
+                    plant=plant,
+                    quantity=quantity
+                )
 
     return redirect('home')
 
 
-# ---------------- EDIT ----------------
 def edit_plant(request, plant_id):
     plant = get_object_or_404(Plant, id=plant_id)
-
     if request.method == 'POST':
         plant.name = request.POST.get('name')
         plant.price = request.POST.get('price')
         plant.stock = request.POST.get('stock')
         plant.save()
         return redirect('home')
-
     return render(request, 'edit_plant.html', {'plant': plant})
 
 
-# ---------------- DELETE ----------------
 def delete_plant(request, plant_id):
     plant = get_object_or_404(Plant, id=plant_id)
     plant.delete()
-    return redirect('home')
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Plant, Order
-
-
-@login_required
-def buy_plant(request, plant_id):
-    plant = get_object_or_404(Plant, id=plant_id)
-
-    if plant.stock > 0:
-        # ลด stock
-        plant.stock -= 1
-        plant.save()
-
-        # ✅ บันทึก order
-        Order.objects.create(
-            user=request.user,
-            plant=plant,
-            quantity=1
-        )
-
     return redirect('home')
