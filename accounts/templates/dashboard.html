@@ -1,74 +1,121 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
     <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-
-<h1>📊 Dashboard</h1>
-
-<!-- ✅ ปุ่มกลับหน้า Home -->
-<a href="{% url 'home' %}" 
-   style="padding:10px; background:#2d5032; color:white; text-decoration:none; border-radius:5px;">
-   ⬅️ กลับหน้า Home
-</a>
-
-<hr>
-
-<!-- ✅ สรุปยอด -->
-<h2>📈 สรุปผล</h2>
-<p>จำนวนออเดอร์ทั้งหมด: <b>{{ total_orders }}</b></p>
-<p>จำนวนต้นไม้ที่ขาย: <b>{{ total_quantity }}</b></p>
-<p>รายได้รวม: <b>{{ total_revenue }} บาท</b></p>
-
-<hr>
-
-<!-- ✅ กราฟ -->
-<h2>📊 กราฟยอดขาย</h2>
-<canvas id="salesChart" width="400" height="200"></canvas>
-
-<hr>
-
-<!-- ✅ ตาราง -->
-<h2>📋 รายการสั่งซื้อ</h2>
-<table border="1" cellpadding="10">
-    <tr>
-        <th>User</th>
-        <th>Plant</th>
-        <th>Quantity</th>
-        <th>Date</th>
-    </tr>
-
-    {% for order in orders %}
-    <tr>
-        <td>{{ order.user.username }}</td>
-        <td>{{ order.plant.name }}</td>
-        <td>{{ order.quantity }}</td>
-        <td>{{ order.created_at }}</td>
-    </tr>
-    {% endfor %}
-</table>
-
-<!-- ✅ Chart.js -->
-<script>
-    const labels = {{ labels|safe }};
-    const data = {{ data|safe }};
-
-    const ctx = document.getElementById('salesChart');
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'จำนวนที่ขาย',
-                data: data,
-                borderWidth: 1
-            }]
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-    });
-</script>
+    </style>
+</head>
 
+<body class="bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-light text-gray-900">Dashboard</h1>
+            <a href="{% url 'home' %}"
+               class="text-sm text-gray-600 hover:text-gray-900">
+                ← Back to Home
+            </a>
+        </div>
+
+        <!-- Summary -->
+        <div class="bg-white rounded-lg p-6 mb-8">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">Summary</h2>
+            <div class="grid grid-cols-3 gap-6">
+                <div>
+                    <p class="text-sm text-gray-600 mb-1">Total Orders</p>
+                    <p class="text-2xl font-light text-gray-900">{{ total_orders }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 mb-1">Plants Sold</p>
+                    <p class="text-2xl font-light text-gray-900">{{ total_quantity }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 mb-1">Revenue</p>
+                    <p class="text-2xl font-light text-gray-900">{{ total_revenue }} ฿</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="bg-white rounded-lg p-6 mb-8">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">Sales Chart</h2>
+            <canvas id="salesChart" width="400" height="200"></canvas>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="bg-white rounded-lg p-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">Orders</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-700">User</th>
+                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-700">Plant</th>
+                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-700">Quantity</th>
+                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-700">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr class="border-b border-gray-100">
+                            <td class="py-3 px-4 text-sm text-gray-900">{{ order.user.username }}</td>
+                            <td class="py-3 px-4 text-sm text-gray-900">{{ order.plant.name }}</td>
+                            <td class="py-3 px-4 text-sm text-gray-900">{{ order.quantity }}</td>
+                            <td class="py-3 px-4 text-sm text-gray-900">{{ order.created_at }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js -->
+    <script>
+        const labels = {{ labels|safe }};
+        const data = {{ data|safe }};
+
+        const ctx = document.getElementById('salesChart');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'จำนวนที่ขาย',
+                    data: data,
+                    borderWidth: 1,
+                    backgroundColor: '#e5e7eb'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,104 +1,90 @@
 <!doctype html>
-<html lang="th" class="h-full">
+<html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plant Shop</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+  </style>
 </head>
 
-<body class="bg-[#f6f2ec] font-sans">
+<body class="bg-gray-50 text-gray-900">
 
 <!-- NAV -->
-<nav class="flex justify-between items-center p-5 bg-white shadow">
-  <h1 class="text-2xl font-bold text-green-800">🌿 Plant Shop</h1>
+<nav class="border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <div class="flex items-center">
+        <h1 class="text-lg font-medium">🌿 Plants</h1>
+      </div>
 
-  <div>
-    {% if user.is_authenticated %}
-        <span class="mr-3">Welcome {{ user.username }}</span>
-        {% if user.is_staff %}
-        <a href="{% url 'dashboard' %}" 
-           style="padding:10px; background:#2d5032; color:white; text-decoration:none; border-radius:5px; margin-right:10px;">
-            📊 Dashboard
-        </a>
-    {% endif %}
-        {% if user.is_staff %}
-            <a href="{% url 'add_plant' %}"
-               class="bg-green-700 text-white px-4 py-2 rounded">
-               ➕ เพิ่มต้นไม้
-            </a>
+      <div class="flex items-center space-x-4">
+        {% if user.is_authenticated %}
+          <span class="text-sm text-gray-600">{{ user.username }}</span>
+          {% if user.is_staff %}
+            <a href="{% url 'dashboard' %}" class="text-sm text-gray-600 hover:text-gray-900">Dashboard</a>
+            <a href="{% url 'add_plant' %}" class="text-sm text-gray-600 hover:text-gray-900">Add Plant</a>
+          {% endif %}
+          <a href="/logout/" class="text-sm text-gray-600 hover:text-gray-900">Logout</a>
+        {% else %}
+          <a href="/login/" class="text-sm text-gray-600 hover:text-gray-900">Login</a>
         {% endif %}
-
-        <a href="/logout/" class="ml-3 text-red-500">Logout</a>
-
-    {% else %}
-        <a href="/login/" class="bg-yellow-600 text-white px-4 py-2 rounded">
-            Login
-        </a>
-    {% endif %}
+      </div>
+    </div>
   </div>
 </nav>
 
 <!-- HEADER -->
-<div class="text-center py-10">
-  <h2 class="text-4xl font-bold text-green-800 mb-2">
-    🌱 ต้นไม้ยอดนิยม
-  </h2>
-  <p class="text-gray-600">เลือกซื้อต้นไม้ที่คุณชอบ</p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <h2 class="text-3xl font-light text-gray-900 mb-2">Plants</h2>
+  <p class="text-gray-600 text-sm">Choose your favorite plant</p>
 </div>
 
 <!-- GRID -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 px-10">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
-{% for plant in plants %}
-  <div class="bg-white rounded-xl shadow p-5">
+  {% for plant in plants %}
+    <div class="bg-white">
+      <h3 class="text-lg font-light text-gray-900 px-6 pt-6">{{ plant.name }}</h3>
 
-    <h3 class="text-xl font-bold text-green-800">
-      {{ plant.name }}
-    </h3>
+      <div class="px-6 pb-6">
+        <p class="text-sm text-gray-600 mb-1">฿{{ plant.price }}</p>
+        <p class="text-xs text-gray-500 mb-4">Stock: {{ plant.stock }}</p>
 
-    <p class="text-gray-600">ราคา: {{ plant.price }} บาท</p>
-    <p class="text-gray-600 mb-3">คงเหลือ: {{ plant.stock }}</p>
-
-    {% if plant.stock > 0 %}
-
-        <!-- ✅ ลูกค้าซื้อได้ -->
-        {% if user.is_authenticated and not user.is_staff %}
+        {% if plant.stock > 0 %}
+          {% if user.is_authenticated and not user.is_staff %}
             <a href="{% url 'buy_plant' plant.id %}"
-               class="block text-center bg-green-700 text-white py-2 rounded">
-               🛒 ซื้อ
+               class="block text-center text-sm text-gray-900 hover:text-gray-600 py-2 border border-gray-300 hover:border-gray-400 rounded">
+              Buy
             </a>
-
-        <!-- ❌ ยังไม่ login -->
-        {% elif not user.is_authenticated %}
+          {% elif not user.is_authenticated %}
             <a href="/login/"
-               class="block text-center bg-yellow-500 text-white py-2 rounded">
-               🔒 Login เพื่อซื้อ
+               class="block text-center text-sm text-gray-900 hover:text-gray-600 py-2 border border-gray-300 hover:border-gray-400 rounded">
+              Login to buy
             </a>
+          {% endif %}
+        {% else %}
+          <p class="text-xs text-gray-400">Sold out</p>
         {% endif %}
 
-    {% else %}
-        <p class="text-red-500">❌ หมด</p>
-    {% endif %}
-
-    <!-- ✅ ADMIN -->
-    {% if user.is_staff %}
-        <div class="mt-3 text-sm">
-            <a href="{% url 'edit_plant' plant.id %}" class="text-blue-500">
-                ✏️ แก้ไข
-            </a> |
-            <a href="{% url 'delete_plant' plant.id %}" class="text-red-500">
-                🗑 ลบ
-            </a>
-        </div>
-    {% endif %}
+        {% if user.is_staff %}
+          <div class="mt-3 text-xs space-x-4">
+            <a href="{% url 'edit_plant' plant.id %}" class="text-gray-600 hover:text-gray-900">Edit</a>
+            <a href="{% url 'delete_plant' plant.id %}" class="text-gray-600 hover:text-gray-900">Delete</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-gray-500 text-sm">No plants available</p>
+  {% endfor %}
 
   </div>
-{% empty %}
-  <p>❌ ไม่มีข้อมูลต้นไม้</p>
-{% endfor %}
-
 </div>
 
 </body>
