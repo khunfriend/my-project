@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<h1>📊 Dashboard</h1>
+
+<!-- ✅ ปุ่มกลับหน้า Home -->
+<a href="{% url 'home' %}" 
+   style="padding:10px; background:#2d5032; color:white; text-decoration:none; border-radius:5px;">
+   ⬅️ กลับหน้า Home
+</a>
+
+<hr>
+
+<!-- ✅ สรุปยอด -->
+<h2>📈 สรุปผล</h2>
+<p>จำนวนออเดอร์ทั้งหมด: <b>{{ total_orders }}</b></p>
+<p>จำนวนต้นไม้ที่ขาย: <b>{{ total_quantity }}</b></p>
+<p>รายได้รวม: <b>{{ total_revenue }} บาท</b></p>
+
+<hr>
+
+<!-- ✅ กราฟ -->
+<h2>📊 กราฟยอดขาย</h2>
+<canvas id="salesChart" width="400" height="200"></canvas>
+
+<hr>
+
+<!-- ✅ ตาราง -->
+<h2>📋 รายการสั่งซื้อ</h2>
+<table border="1" cellpadding="10">
+    <tr>
+        <th>User</th>
+        <th>Plant</th>
+        <th>Quantity</th>
+        <th>Date</th>
+    </tr>
+
+    {% for order in orders %}
+    <tr>
+        <td>{{ order.user.username }}</td>
+        <td>{{ order.plant.name }}</td>
+        <td>{{ order.quantity }}</td>
+        <td>{{ order.created_at }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<!-- ✅ Chart.js -->
+<script>
+    const labels = {{ labels|safe }};
+    const data = {{ data|safe }};
+
+    const ctx = document.getElementById('salesChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'จำนวนที่ขาย',
+                data: data,
+                borderWidth: 1
+            }]
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>แก้ไขต้นไม้</title>
+</head>
+<body>
+
+<h1>✏️ แก้ไขต้นไม้</h1>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>ชื่อ:</label><br>
+    <input type="text" name="name" value="{{ plant.name }}"><br><br>
+
+    <label>ราคา:</label><br>
+    <input type="number" name="price" value="{{ plant.price }}"><br><br>
+
+    <label>จำนวน:</label><br>
+    <input type="number" name="stock" value="{{ plant.stock }}"><br><br>
+
+    <button type="submit">💾 บันทึก</button>
+</form>
+
+<br>
+<a href="/">⬅️ กลับหน้า Home</a>
+
+</body>
+</html>

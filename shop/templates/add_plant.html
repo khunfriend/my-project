@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>เพิ่มต้นไม้</title>
+</head>
+<body>
+
+<h1>➕ เพิ่มต้นไม้ใหม่</h1>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>ชื่อต้นไม้:</label><br>
+    <input type="text" name="name"><br><br>
+
+    <label>ราคา:</label><br>
+    <input type="number" name="price"><br><br>
+
+    <label>จำนวน:</label><br>
+    <input type="number" name="stock"><br><br>
+
+    <button type="submit">💾 บันทึก</button>
+</form>
+
+<br>
+<a href="/">⬅️ กลับหน้า Home</a>
+
+</body>
+</html>
