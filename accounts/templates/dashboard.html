@@ -8,9 +8,12 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         .shadow { box-shadow: 4px 4px 10px rgba(12, 2, 2, 0.2) !important; }
-        .colgreen { background-color: rgb(25, 124, 25); }
+        .colgreen-ln { background: linear-gradient(45deg, #115e59, #10b981); }
         .colwhite { color: rgb(255, 255, 255) !important; font-weight: bold !important; font-size: 20px !important; }
         .colblack { color: black; font-size: 15px !important;}
+        .textsizel { font-size: 18px !important;}
+        .fz-s { font-size: 15px !important; }
+        .fz-sm { font-size: 20px !important; }
     </style>
 </head>
 
@@ -19,8 +22,8 @@
 
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
-        <h1 class="text-2xl font-light text-gray-900" style="font-size: 20px;">Dashboard</h1>
-        <a href="{% url 'home' %}" class="text-sm text-gray-600 hover:text-gray-900">
+        <h1 class="text-2xl font-light text-gray-900" style="font-size: 2.5rem; font-weight: bold;">Dashboard</h1>
+        <a href="{% url 'home' %}" class="text-sm text-gray-600 hover:text-gray-900 colblack">
             ← Back to Home
         </a>
     </div>
@@ -28,12 +31,12 @@
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
         <div class="bg-white rounded-lg p-6 border border-gray-100 shadow-sm shadow">
-            <p class="text-sm text-gray-500 mb-2">Total Orders</p>
+            <p class="text-sm text-gray-500 mb-2 fz-sm">Total Orders</p>
             <p class="text-4xl font-light text-gray-900"># {{ total_orders }}</p>
             <p class="text-xs text-gray-400 mt-2">ออร์เดอร์ทั้งหมด</p>
         </div>
         <div class="bg-white rounded-lg p-6 border border-gray-100 shadow-sm shadow">
-            <p class="text-sm text-gray-500 mb-2">Total Revenue</p>
+            <p class="text-sm text-gray-500 mb-2 fz-sm">Total Revenue</p>
             <p class="text-4xl font-light text-gray-900">฿{{ total_revenue }}</p>
             <p class="text-xs text-gray-400 mt-2">รายได้ทั้งหมด</p>
         </div>
@@ -41,16 +44,16 @@
 
     <!-- จำนวนต้นไม้แต่ละประเภท -->
     <div class="bg-white rounded-lg border border-gray-100 shadow-sm mb-8 shadow">
-        <div class="px-6 py-4 border-b border-gray-100 colgreen" style="border-radius: 0.5rem 0.5rem 0px 0px; overflow: hidden !important">
+        <div class="px-6 py-4 border-b border-gray-100 colgreen-ln" style="border-radius: 0.5rem 0.5rem 0px 0px; overflow: hidden !important">
             <h2 class="text-lg font-medium text-gray-900 colwhite">Number of Plants Sold by Type</h2>
         </div>
         <div class="p-6">
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {% for item in plant_summary %}
                 <div class="bg-gray-50 rounded-lg p-4 text-center">
-                    <p class="text-sm font-medium text-gray-900 mb-1">{{ item.plant__name }}</p>
-                    <p class="text-2xl font-light text-green-700">{{ item.total_qty }}</p>
-                    <p class="text-xs text-gray-400 mt-1">plants</p>
+                    <p class="text-sm font-medium text-gray-900 mb-1 fz-sm">{{ item.plant__name }}</p>
+                    <p class="text-2xl font-light text-green-700 ">{{ item.total_qty }}</p>
+                    <p class="text-xs text-gray-400 mt-1 fz-s">plants</p>
                 </div>
                 {% empty %}
                 <p class="text-sm text-gray-400">ยังไม่มีข้อมูล</p>
@@ -61,7 +64,7 @@
 
     <!-- Order List + Pagination -->
     <div class="bg-white rounded-lg border border-gray-100 shadow-sm shadow">
-        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center colgreen" style="border-radius: 0.5rem 0.5rem 0px 0px; overflow: hidden !important">
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center colgreen-ln" style="border-radius: 0.5rem 0.5rem 0px 0px; overflow: hidden !important">
             <h2 class="text-lg font-medium text-gray-900 colwhite">Orders</h2>
             <span class="text-sm text-gray-400" style="color: white; font-size: 15px;">
                 Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
@@ -73,23 +76,23 @@
             <table class="min-w-full">
                 <thead>
                     <tr class="bg-gray-50 border-b border-gray-100">
-                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase">#</th>
-                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase">User</th>
-                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase">Plant</th>
-                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase">Qty</th>
-                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase">Total Price</th>
-                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase">Date</th>
+                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">#</th>
+                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">User</th>
+                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">Plant</th>
+                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">Qty</th>
+                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">Total Price</th>
+                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">Date</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for order in page_obj %}
                     <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                        <td class="py-4 px-6 text-sm text-gray-400">{{ page_obj.start_index|add:forloop.counter0 }}</td>
-                        <td class="py-4 px-6 text-sm font-medium text-gray-900">{{ order.username }}</td>
-                        <td class="py-4 px-6 text-sm text-gray-900">{{ order.plant_name }}</td>
-                        <td class="py-4 px-6 text-sm text-gray-900">× {{ order.quantity }}</td>
-                        <td class="py-4 px-6 text-sm font-medium text-gray-900">฿{{ order.subtotal }}</td>
-                        <td class="py-4 px-6 text-sm text-gray-500">{{ order.created_at|date:"d M Y, H:i" }}</td>
+                        <td class="py-4 px-6 text-sm text-gray-400 textsizel">{{ page_obj.start_index|add:forloop.counter0 }}</td>
+                        <td class="py-4 px-6 text-sm font-medium text-gray-900 textsizel">{{ order.username }}</td>
+                        <td class="py-4 px-6 text-sm text-gray-900 textsizel">{{ order.plant_name }}</td>
+                        <td class="py-4 px-6 text-sm text-gray-900 textsizel">× {{ order.quantity }}</td>
+                        <td class="py-4 px-6 text-sm font-medium text-gray-900 textsizel">฿{{ order.subtotal }}</td>
+                        <td class="py-4 px-6 text-sm text-gray-500 textsizel">{{ order.created_at|date:"d M Y, H:i" }}</td>
                     </tr>
                     {% empty %}
                     <tr>
