@@ -53,7 +53,7 @@ def buy_cart(request):
 def edit_plant(request, plant_id):
     plant = get_object_or_404(Plant, id=plant_id)
     if request.method == 'POST':
-        plant.name = request.POST.get('name')
+        # plant.name = request.POST.get('name')
         plant.price = request.POST.get('price')
         plant.stock = request.POST.get('stock')
         plant.save()
