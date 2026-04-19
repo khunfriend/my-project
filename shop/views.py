@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.core.paginator import Paginator
@@ -96,6 +97,7 @@ def buy_cart(request):
             return redirect('home')
 
         group_id = uuid.uuid4()
+        last_order = None
         for item in cart:
             plant_id = item.get('id')
             quantity = int(item.get('quantity', 1))
@@ -103,7 +105,10 @@ def buy_cart(request):
             if plant.stock >= quantity:
                 plant.stock -= quantity
                 plant.save()
-                Order.objects.create(user=request.user, plant=plant, quantity=quantity, order_group=group_id)
+                last_order = Order.objects.create(user=request.user, plant=plant, quantity=quantity, order_group=group_id)
+
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'order_id': last_order.id if last_order else None})
 
     return redirect('home')
 

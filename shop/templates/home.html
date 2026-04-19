@@ -476,23 +476,38 @@ function closePaymentModal() {
   document.getElementById('paymentModal').classList.add('hidden');
 }
 
-// ---------- Confirm Payment → submit form + แสดง Receipt ----------
-function confirmPayment() {
-  document.getElementById('cartDataInput').value = JSON.stringify(cart);
-  showReceipt();
-  // ไม่ submit ตรงนี้แล้ว
+// ---------- Confirm Payment → AJAX update stock + แสดง Receipt ----------
+async function confirmPayment() {
+  const cartSnapshot = [...cart];
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  try {
+    const res = await fetch("{% url 'buy_cart' %}", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: 'csrfmiddlewaretoken=' + encodeURIComponent(csrfToken) +
+            '&cart_data=' + encodeURIComponent(JSON.stringify(cartSnapshot)),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      showReceipt(data.order_id);
+    }
+  } catch (e) {
+    alert('เกิดข้อผิดพลาด กรุณาลองใหม่');
+  }
 }
 
 // ---------- Receipt Modal ----------
-function showReceipt() {
+function showReceipt(orderId) {
   const now = new Date();
   const dateStr = now.getFullYear() + '-' +
     String(now.getMonth()+1).padStart(2,'0') + '-' +
     String(now.getDate()).padStart(2,'0') + ' ' +
     String(now.getHours()).padStart(2,'0') + ':' +
     String(now.getMinutes()).padStart(2,'0');
-
-  const orderId = '#' + Math.floor(Math.random() * 9000 + 1000);
 
   let html = '';
   let total = 0;
@@ -514,7 +529,7 @@ function showReceipt() {
   });
 
   document.getElementById('receiptDate').textContent = dateStr;
-  document.getElementById('receiptId').textContent = orderId;
+  document.getElementById('receiptId').textContent = '#' + orderId;
   document.getElementById('receiptItemCount').textContent = totalItems + ' items';
   document.getElementById('receiptItems').innerHTML = html;
   document.getElementById('receiptTotal').textContent = '฿' + total;
@@ -529,9 +544,7 @@ function showReceipt() {
 }
 
 function closeReceiptModal() {
-  document.getElementById('receiptModal').classList.add('hidden');
-  // ✅ submit ตอนกด Close แทน
-  document.getElementById('cartForm').submit();
+  window.location.href = "{% url 'home' %}";
 }
 
 </script>
