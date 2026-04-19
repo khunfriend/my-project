@@ -41,9 +41,11 @@ def dashboard(request):
                 'total_qty': 0,
                 'total_price': 0,
                 'created_at': o.created_at,
+                'items': [],
             }
         grouped[key]['total_qty'] += o.quantity
         grouped[key]['total_price'] += o.quantity * o.plant.price
+        grouped[key]['items'].append({'name': o.plant.name, 'quantity': o.quantity})
 
     orders_with_subtotal = list(grouped.values())
 
