@@ -170,19 +170,115 @@
     </div>
 
     <!-- ✅ Form สำหรับ submit ทั้งตะกร้าไปหลังบ้าน -->
-    <form method="POST" action="{% url 'buy_cart' %}" id="cartForm">
-      {% csrf_token %}
-      <input type="hidden" name="cart_data" id="cartDataInput">
-      <button type="submit" onclick="prepareCartSubmit()"
-              class="w-full bg-gray-900 text-white py-2 rounded-md hover:bg-gray-800 text-sm fz-s">
-        Confirm Order
-      </button>
-    </form>
+  <form id="cartForm" method="POST" action="{% url 'buy_cart' %}">
+  {% csrf_token %}
+  <input type="hidden" name="cart_data" id="cartDataInput">
+  </form>
+<button onclick="openPaymentModal()"
+        class="w-full bg-gray-900 text-white py-2 rounded-md hover:bg-gray-800 text-sm fz-s">
+  Confirm Order
+</button>
 
     <button onclick="clearCart()"
             class="w-full mt-2 text-xs text-gray-400 hover:text-red-500">
       Clear Cart
     </button>
+  </div>
+</div>
+
+<!-- ===================== MODAL สรุปคำสั่งซื้อ + QR ===================== -->
+<div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-lg p-8 w-full max-w-md shadow-lg">
+
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-medium text-gray-900 fz-m">🧾 สรุปคำสั่งซื้อ</h3>
+      <button onclick="closePaymentModal()" class="text-gray-400 hover:text-gray-600 text-lg">✕</button>
+    </div>
+
+    <p class="text-sm text-gray-500 mb-4">คุณกำลังจะสั่งซื้อ:</p>
+
+    <!-- รายการสินค้า -->
+    <div id="paymentItems" class="mb-4 max-h-40 overflow-y-auto"></div>
+
+    <!-- เส้นแบ่ง -->
+    <div class="border-t border-gray-200 my-4"></div>
+
+    <!-- ราคารวม -->
+    <div class="flex justify-between items-center mb-6">
+      <span class="text-lg font-medium text-gray-900">รวมทั้งหมด</span>
+      <span id="paymentTotal" class="text-2xl font-bold text-gray-900"></span>
+    </div>
+
+    <!-- QR Code -->
+    <div class="flex flex-col items-center mb-6">
+      <img src="{% static 'images/qr_payment.jpg' %}"
+           alt="QR Payment"
+           class="w-48 h-48 object-contain border border-gray-200 rounded-lg p-2">
+      <p class="text-xs text-gray-400 mt-2">สแกน QR เพื่อชำระเงิน</p>
+    </div>
+
+    <!-- ปุ่ม -->
+    <div class="flex gap-3">
+      <button onclick="confirmPayment()"
+              class="flex-1 bg-green-700 text-white py-2 rounded-md hover:bg-green-800 text-sm fz-s">
+        Confirm Payment
+      </button>
+      <button onclick="closePaymentModal()"
+              class="flex-1 border border-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-50 text-sm fz-s">
+        Cancel
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== MODAL Order Receipt ===================== -->
+<div id="receiptModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-lg p-8 w-full max-w-md shadow-lg">
+
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-lg font-medium text-gray-900 fz-m">🧾 Order Receipt</h3>
+      <button onclick="closeReceiptModal()" class="text-gray-400 hover:text-gray-600 text-lg">✕</button>
+    </div>
+
+    <!-- Order Info -->
+    <div class="space-y-2 mb-4">
+      <div class="flex justify-between text-sm text-gray-600">
+        <span>Order Date</span>
+        <span id="receiptDate"></span>
+      </div>
+      <div class="flex justify-between text-sm text-gray-600">
+        <span>Order ID</span>
+        <span id="receiptId"></span>
+      </div>
+      <div class="flex justify-between text-sm text-gray-600">
+        <span>Items</span>
+        <span id="receiptItemCount"></span>
+      </div>
+    </div>
+
+    <div class="border-t border-gray-200 my-4"></div>
+
+    <!-- Order Details -->
+    <p class="text-sm font-medium text-gray-700 mb-3">Order Details:</p>
+    <div id="receiptItems" class="mb-4 max-h-40 overflow-y-auto"></div>
+
+    <div class="border-t border-gray-200 my-4"></div>
+
+    <!-- Total -->
+    <div class="flex justify-between items-center mb-6">
+      <span class="text-lg font-medium text-gray-900">Total</span>
+      <span id="receiptTotal" class="text-2xl font-bold text-gray-900"></span>
+    </div>
+
+    <!-- ปุ่ม -->
+   <div class="flex gap-3">
+  <button onclick="closeReceiptModal()"
+          class="w-full bg-gray-900 text-white py-2 rounded-md hover:bg-gray-800 text-sm fz-s">
+    Close
+  </button>
+</div>
+
   </div>
 </div>
 
@@ -340,6 +436,96 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeModal();
   });
+
+  // ---------- Payment Modal ----------
+function openPaymentModal() {
+  if (cart.length === 0) return;
+
+  // แสดงรายการสินค้าใน modal
+  let html = '';
+  let total = 0;
+  cart.forEach(item => {
+    const subtotal = item.price * item.quantity;
+    total += subtotal;
+    html += `
+      <div class="flex justify-between items-center mb-2">
+        <div>
+          <p class="text-sm font-medium text-gray-900">${item.name}</p>
+          <p class="text-xs text-gray-400">฿${item.price} × ${item.quantity}</p>
+        </div>
+        <span class="text-sm text-gray-700">฿${subtotal}</span>
+      </div>
+    `;
+  });
+
+  document.getElementById('paymentItems').innerHTML = html;
+  document.getElementById('paymentTotal').textContent = '฿' + total;
+  document.getElementById('cartPanel').classList.add('hidden');
+  document.getElementById('paymentModal').classList.remove('hidden');
+}
+
+function closePaymentModal() {
+  document.getElementById('paymentModal').classList.add('hidden');
+}
+
+// ---------- Confirm Payment → submit form + แสดง Receipt ----------
+function confirmPayment() {
+  document.getElementById('cartDataInput').value = JSON.stringify(cart);
+  showReceipt();
+  // ไม่ submit ตรงนี้แล้ว
+}
+
+// ---------- Receipt Modal ----------
+function showReceipt() {
+  const now = new Date();
+  const dateStr = now.getFullYear() + '-' +
+    String(now.getMonth()+1).padStart(2,'0') + '-' +
+    String(now.getDate()).padStart(2,'0') + ' ' +
+    String(now.getHours()).padStart(2,'0') + ':' +
+    String(now.getMinutes()).padStart(2,'0');
+
+  const orderId = '#' + Math.floor(Math.random() * 9000 + 1000);
+
+  let html = '';
+  let total = 0;
+  let totalItems = 0;
+
+  cart.forEach(item => {
+    const subtotal = item.price * item.quantity;
+    total += subtotal;
+    totalItems += item.quantity;
+    html += `
+      <div class="flex justify-between items-center mb-2">
+        <div>
+          <p class="text-sm font-medium text-gray-900">${item.name}</p>
+          <p class="text-xs text-gray-400">฿${item.price} × ${item.quantity}</p>
+        </div>
+        <span class="text-sm text-gray-700">฿${subtotal}</span>
+      </div>
+    `;
+  });
+
+  document.getElementById('receiptDate').textContent = dateStr;
+  document.getElementById('receiptId').textContent = orderId;
+  document.getElementById('receiptItemCount').textContent = totalItems + ' items';
+  document.getElementById('receiptItems').innerHTML = html;
+  document.getElementById('receiptTotal').textContent = '฿' + total;
+
+  document.getElementById('paymentModal').classList.add('hidden');
+  document.getElementById('receiptModal').classList.remove('hidden');
+
+  // ล้างตะกร้า
+  cart = [];
+  renderCart();
+  hideCartPanel();
+}
+
+function closeReceiptModal() {
+  document.getElementById('receiptModal').classList.add('hidden');
+  // ✅ submit ตอนกด Close แทน
+  document.getElementById('cartForm').submit();
+}
+
 </script>
 
 </body>
