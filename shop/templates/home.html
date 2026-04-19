@@ -50,9 +50,9 @@
             <a href="{% url 'dashboard' %}" class="text-sm colwhite">Dashboard</a>
             <a href="{% url 'add_plant' %}" class="text-sm colwhite">Add Plant</a>
           {% endif %}
-          <a href="/logout/" class="text-sm colwhite">Logout</a>
+          <a href="{% url 'logout' %}" class="text-sm colwhite">Logout</a>
         {% else %}
-          <a href="/login/" class="text-sm colwhite">Login</a>
+          <a href="{% url 'login' %}" class="text-sm colwhite">Login</a>
         {% endif %}
       </div>
     </div>
@@ -87,7 +87,7 @@
               Buy
             </button>
           {% elif not user.is_authenticated %}
-            <a href="/login/"
+            <a href="{% url 'login' %}"
                class="block text-center text-sm text-gray-900 py-2 border border-gray-300 rounded colgreen-ln colwhite fz-s">
               Login to buy
             </a>
