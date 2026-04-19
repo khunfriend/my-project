@@ -57,7 +57,8 @@ def add_plant(request):
         name = request.POST.get('name')
         price = request.POST.get('price')
         stock = request.POST.get('stock')
-        Plant.objects.create(name=name, price=price, stock=stock)
+        image = request.FILES.get('image')
+        Plant.objects.create(name=name, price=price, stock=stock, image=image)
         return redirect('home')
     return render(request, 'add_plant.html')
 

@@ -5,12 +5,12 @@ class Plant(models.Model):
     name = models.CharField(max_length=100)
     price = models.IntegerField()
     stock = models.IntegerField()
+    image = models.ImageField(upload_to='plants/', blank=True, null=True)
 
     def __str__(self):
         return self.name
 
 
-# ✅ เพิ่มอันนี้
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
