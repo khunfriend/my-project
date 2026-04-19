@@ -4,6 +4,7 @@ from django.db.models import Sum
 from django.core.paginator import Paginator
 from .models import Plant, Order
 import json
+import uuid
 
 
 # ------------------ HOME ------------------
@@ -28,16 +29,22 @@ def dashboard(request):
         .order_by('-total_qty')
     )
 
+    # จัดกลุ่มตาม order_group (cart session)
     all_orders = Order.objects.select_related('plant', 'user').order_by('-created_at')
-    orders_with_subtotal = []
+    grouped = {}
     for o in all_orders:
-        orders_with_subtotal.append({
-            'username': o.user.username,
-            'plant_name': o.plant.name,
-            'quantity': o.quantity,
-            'subtotal': o.quantity * o.plant.price,
-            'created_at': o.created_at,
-        })
+        key = str(o.order_group) if o.order_group else str(o.id)
+        if key not in grouped:
+            grouped[key] = {
+                'username': o.user.get_full_name() or o.user.username,
+                'total_qty': 0,
+                'total_price': 0,
+                'created_at': o.created_at,
+            }
+        grouped[key]['total_qty'] += o.quantity
+        grouped[key]['total_price'] += o.quantity * o.plant.price
+
+    orders_with_subtotal = list(grouped.values())
 
     paginator = Paginator(orders_with_subtotal, 10)
     page_number = request.GET.get('page', 1)
@@ -88,6 +95,7 @@ def buy_cart(request):
         except:
             return redirect('home')
 
+        group_id = uuid.uuid4()
         for item in cart:
             plant_id = item.get('id')
             quantity = int(item.get('quantity', 1))
@@ -95,7 +103,7 @@ def buy_cart(request):
             if plant.stock >= quantity:
                 plant.stock -= quantity
                 plant.save()
-                Order.objects.create(user=request.user, plant=plant, quantity=quantity)
+                Order.objects.create(user=request.user, plant=plant, quantity=quantity, order_group=group_id)
 
     return redirect('home')
 

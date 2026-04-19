@@ -79,11 +79,10 @@
                 <thead>
                     <tr class="bg-gray-50 border-b border-gray-100">
                         <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">#</th>
-                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">User</th>
-                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">Plant</th>
-                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">Qty</th>
-                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">Total Price</th>
-                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">Date</th>
+                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">ชื่อผู้ซื้อ</th>
+                        <th class="text-center py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">จำนวนทั้งหมด</th>
+                        <th class="text-right py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">ราคารวม</th>
+                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">วันที่ / เวลา</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -91,14 +90,13 @@
                     <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                         <td class="py-4 px-6 text-sm text-gray-400 textsizel">{{ page_obj.start_index|add:forloop.counter0 }}</td>
                         <td class="py-4 px-6 text-sm font-medium text-gray-900 textsizel">{{ order.username }}</td>
-                        <td class="py-4 px-6 text-sm text-gray-900 textsizel">{{ order.plant_name }}</td>
-                        <td class="py-4 px-6 text-sm text-gray-900 textsizel">× {{ order.quantity }}</td>
-                        <td class="py-4 px-6 text-sm font-medium text-gray-900 textsizel">฿{{ order.subtotal }}</td>
+                        <td class="py-4 px-6 text-sm text-gray-900 textsizel text-center">{{ order.total_qty }} ชิ้น</td>
+                        <td class="py-4 px-6 text-sm font-medium text-green-700 textsizel text-right">฿{{ order.total_price }}</td>
                         <td class="py-4 px-6 text-sm text-gray-500 textsizel">{{ order.created_at|date:"d M Y, H:i" }}</td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="py-8 text-center text-sm text-gray-400">
+                        <td colspan="5" class="py-8 text-center text-sm text-gray-400">
                             ยังไม่มีออร์เดอร์
                         </td>
                     </tr>

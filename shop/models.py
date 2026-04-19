@@ -16,6 +16,7 @@ class Order(models.Model):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
+    order_group = models.UUIDField(null=True, blank=True, db_index=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.plant.name}"

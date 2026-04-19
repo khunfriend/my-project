@@ -10,12 +10,12 @@
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     .colgreen-ln { background: linear-gradient(45deg, #115e59, #10b981); }
-    .colwhite { color: rgb(255, 255, 255) !important; font-weight: bold !important; font-size: 20px !important; }
+    .colwhite { color: rgb(255, 255, 255) !important; font-weight: bold !important; font-size: clamp(13px, 2vw, 20px) !important; }
     .shadow { box-shadow: 4px 4px 10px rgba(12, 2, 2, 0.2) !important; }
-    .fz-m { font-size: 25px !important; font-weight: bold !important; }
-    .fz-s { font-size: 15px !important; }
+    .fz-m { font-size: clamp(15px, 2.5vw, 25px) !important; font-weight: bold !important; }
+    .fz-s { font-size: clamp(12px, 1.5vw, 15px) !important; }
     .block { font-size: medium !important; }
-    .textsizel { font-size: 18px !important;}
+    .textsizel { font-size: clamp(13px, 1.8vw, 18px) !important;}
 
     /* Cart bounce animation */
     @keyframes bounceIn {
@@ -60,14 +60,14 @@
 </nav>
 
 <!-- HEADER -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-  <h2 class="text-3xl font-light text-gray-900 mb-2">Plants: "He who plants a tree, plants a hope." — Lucy Larcom</h2>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-12">
+  <h2 class="text-lg sm:text-2xl lg:text-3xl font-light text-gray-900 mb-2">Plants: "He who plants a tree, plants a hope." — Lucy Larcom</h2>
   <p class="text-gray-600 text-sm fz-s">Pick the tree you love, and let hope grow</p>
 </div>
 
 <!-- GRID -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
   {% for plant in plants %}
     <div class="bg-white shadow" style="border-radius: 0.5rem">
       {% if plant.image %}
@@ -78,8 +78,8 @@
         <div class="bg-gray-100 flex items-center justify-center text-5xl"
              style="aspect-ratio:1/1; border-radius:0.5rem 0.5rem 0 0;">🌿</div>
       {% endif %}
-      <h3 class="text-lg font-light text-gray-900 px-6 pt-6 fz-m">{{ plant.name }}</h3>
-      <div class="px-6 pb-6">
+      <h3 class="text-lg font-light text-gray-900 px-3 sm:px-6 pt-3 sm:pt-6 fz-m">{{ plant.name }}</h3>
+      <div class="px-3 sm:px-6 pb-3 sm:pb-6">
         <p class="text-sm text-gray-600 mb-1 textsizel">฿{{ plant.price }}</p>
 
         {% if plant.stock > 0 %}
@@ -149,7 +149,7 @@
 
 
 <!-- ===================== ตะกร้า (ขวาล่าง) ===================== -->
-<div id="cartWidget" class="fixed bottom-6 right-6 z-40 hidden slide-up">
+<div id="cartWidget" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 hidden slide-up">
   <button onclick="toggleCartPanel()"
           class="relative bg-green-700 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:bg-green-800 text-2xl">
     🛒
@@ -161,7 +161,7 @@
 </div>
 
 <!-- ===================== Cart Panel ===================== -->
-<div id="cartPanel" class="fixed bottom-24 right-6 z-40 hidden w-80 bg-white rounded-lg shadow-xl border border-gray-200">
+<div id="cartPanel" class="fixed bottom-24 right-4 sm:right-6 z-40 hidden w-72 sm:w-80 bg-white rounded-lg shadow-xl border border-gray-200">
   <div class="p-4 border-b border-gray-200 flex justify-between items-center">
     <h3 class="font-medium text-gray-900">🛒 Cart</h3>
     <button onclick="toggleCartPanel()" class="text-gray-400 hover:text-gray-600 text-lg">✕</button>
