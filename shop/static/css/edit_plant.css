@@ -1,0 +1,112 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f9fafb;
+    min-height: 100vh;
+}
+
+/* Container */
+.container {
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 32px 16px;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: #111827;
+}
+
+.back-link {
+    font-size: 0.875rem;
+    color: #4b5563;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    color: #111827;
+}
+
+/* Form Card */
+.form-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 4px 4px 10px rgba(12, 2, 2, 0.2);
+}
+
+/* Form Group */
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    font-size: medium;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+/* Plant name display (readonly) */
+.plant-name-display {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #f3f4f6;
+    border-radius: 6px;
+    background-color: #f9fafb;
+    color: #6b7280;
+    font-size: medium;
+}
+
+/* Input */
+.form-group input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: medium;
+    outline: none;
+    transition: box-shadow 0.2s;
+}
+
+.form-group input:focus {
+    box-shadow: 0 0 0 1px #6b7280;
+    border-color: transparent;
+}
+
+/* Button */
+.btn-save {
+    width: 100%;
+    background-color: #111827;
+    color: #ffffff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: medium;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-save:hover {
+    background-color: #1f2937;
+}
+
+.btn-save:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #6b7280;
+}
