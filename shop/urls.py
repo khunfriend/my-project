@@ -2,8 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.home, name='home'),                              # ← เพิ่มใหม่
-    path('dashboard/', views.dashboard, name='dashboard'),          # ← เพิ่มใหม่
+    path('', views.home, name='home'),                              
+    path('dashboard/', views.dashboard, name='dashboard'),          
     path('add/', views.add_plant, name='add_plant'),
     path('buy/<int:plant_id>/', views.buy_plant, name='buy_plant'),
     path('edit/<int:plant_id>/', views.edit_plant, name='edit_plant'),
