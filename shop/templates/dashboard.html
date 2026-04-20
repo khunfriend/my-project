@@ -2,159 +2,128 @@
 {% load static %}
 <html lang="th">
 <head>
-    <title>Plants Oasis | Dashboard</title>
-    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}?v=2">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        .shadow { box-shadow: 4px 4px 10px rgba(12, 2, 2, 0.2) !important; }
-        .colgreen-ln { background: linear-gradient(45deg, #115e59, #10b981); }
-        .colwhite { color: rgb(255, 255, 255) !important; font-weight: bold !important; font-size: 20px !important; }
-        .colblack { color: black; font-size: 15px !important;}
-        .textsizel { font-size: 18px !important;}
-        .fz-s { font-size: 15px !important; }
-        .fz-sm { font-size: 20px !important; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Plants Oasis | Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}?v=2">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 </head>
 
-<body class="bg-gray-50">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<body>
+<div class="dash-container">
 
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-2xl font-light text-gray-900" style="font-size: 2.5rem; font-weight: bold;">Dashboard</h1>
-        <a href="{% url 'home' %}" class="text-sm text-gray-600 hover:text-gray-900 colblack">
-            ← Back to Home
-        </a>
+  <!-- Header -->
+  <div class="dash-header">
+    <h1 class="dash-title">Dashboard</h1>
+    <a href="{% url 'home' %}" class="dash-back">← Back to Home</a>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+    <div class="summary-card">
+      <p class="summary-card-label">Total Orders</p>
+      <p class="summary-card-value"># {{ total_orders }}</p>
+      <p class="summary-card-sub">ออร์เดอร์ทั้งหมด</p>
+    </div>
+    <div class="summary-card">
+      <p class="summary-card-label">Total Revenue</p>
+      <p class="summary-card-value">฿{{ total_revenue }}</p>
+      <p class="summary-card-sub">รายได้ทั้งหมด</p>
+    </div>
+  </div>
+
+  <!-- จำนวนต้นไม้แต่ละประเภท -->
+  <div class="section-block">
+    <div class="section-head">
+      <h2 class="section-head-title">Number of Plants Sold by Type</h2>
+    </div>
+    <div class="plant-summary-grid">
+      {% for item in plant_summary %}
+        <div class="plant-summary-item">
+          <p class="plant-summary-name">{{ item.plant__name }}</p>
+          <p class="plant-summary-qty">{{ item.total_qty }}</p>
+          <p class="plant-summary-unit">plants</p>
+        </div>
+      {% empty %}
+        <p>ยังไม่มีข้อมูล</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Order List + Pagination -->
+  <div class="section-block">
+    <div class="section-head">
+      <h2 class="section-head-title">Orders</h2>
+      <span class="section-head-meta">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        ({{ page_obj.paginator.count }} items total)
+      </span>
     </div>
 
-    <!-- Summary Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-        <div class="bg-white rounded-lg p-6 border border-gray-100 shadow-sm shadow">
-            <p class="text-sm text-gray-500 mb-2 fz-sm">Total Orders</p>
-            <p class="text-4xl font-light text-gray-900"># {{ total_orders }}</p>
-            <p class="text-xs text-gray-400 mt-2">ออร์เดอร์ทั้งหมด</p>
-        </div>
-        <div class="bg-white rounded-lg p-6 border border-gray-100 shadow-sm shadow">
-            <p class="text-sm text-gray-500 mb-2 fz-sm">Total Revenue</p>
-            <p class="text-4xl font-light text-gray-900">฿{{ total_revenue }}</p>
-            <p class="text-xs text-gray-400 mt-2">รายได้ทั้งหมด</p>
-        </div>
-    </div>
-
-    <!-- จำนวนต้นไม้แต่ละประเภท -->
-    <div class="bg-white rounded-lg border border-gray-100 shadow-sm mb-8 shadow">
-        <div class="px-6 py-4 border-b border-gray-100 colgreen-ln" style="border-radius: 0.5rem 0.5rem 0px 0px; overflow: hidden !important">
-            <h2 class="text-lg font-medium text-gray-900 colwhite">Number of Plants Sold by Type</h2>
-        </div>
-        <div class="p-6">
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {% for item in plant_summary %}
-                <div class="bg-gray-50 rounded-lg p-4 text-center">
-                    <p class="text-sm font-medium text-gray-900 mb-1 fz-sm">{{ item.plant__name }}</p>
-                    <p class="text-2xl font-light text-green-700 ">{{ item.total_qty }}</p>
-                    <p class="text-xs text-gray-400 mt-1 fz-s">plants</p>
-                </div>
-                {% empty %}
-                <p class="text-sm text-gray-400">ยังไม่มีข้อมูล</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>ชื่อผู้ซื้อ</th>
+            <th>รายการสินค้า</th>
+            <th class="text-center">จำนวนทั้งหมด</th>
+            <th class="text-right">ราคารวม</th>
+            <th>วันที่ / เวลา</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in page_obj %}
+            <tr>
+              <td class="col-num">{{ page_obj.start_index|add:forloop.counter0 }}</td>
+              <td>{{ order.username }}</td>
+              <td>
+                {% for item in order.items %}
+                  <div class="order-item-line">{{ item.name }} × {{ item.quantity }}</div>
                 {% endfor %}
-            </div>
-        </div>
+              </td>
+              <td class="col-center">{{ order.total_qty }} ชิ้น</td>
+              <td class="col-price">฿{{ order.total_price }}</td>
+              <td class="col-date">{{ order.created_at|date:"d M Y, H:i" }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="text-center" style="padding:2rem;color:#9ca3af;">ยังไม่มีออร์เดอร์</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
 
-    <!-- Order List + Pagination -->
-    <div class="bg-white rounded-lg border border-gray-100 shadow-sm shadow">
-        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center colgreen-ln" style="border-radius: 0.5rem 0.5rem 0px 0px; overflow: hidden !important">
-            <h2 class="text-lg font-medium text-gray-900 colwhite">Orders</h2>
-            <span class="text-sm text-gray-400" style="color: white; font-size: 15px;">
-                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                ({{ page_obj.paginator.count }} items total)
-            </span>
-        </div>
+    <!-- Pagination -->
+    <div class="pagination">
+      <div>
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}" class="page-btn">← Previous</a>
+        {% else %}
+          <span class="page-btn-disabled">← Previous</span>
+        {% endif %}
+      </div>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full">
-                <thead>
-                    <tr class="bg-gray-50 border-b border-gray-100">
-                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">#</th>
-                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">ชื่อผู้ซื้อ</th>
-                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">รายการสินค้า</th>
-                        <th class="text-center py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">จำนวนทั้งหมด</th>
-                        <th class="text-right py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">ราคารวม</th>
-                        <th class="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase fz-s">วันที่ / เวลา</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for order in page_obj %}
-                    <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                        <td class="py-4 px-6 text-sm text-gray-400 textsizel">{{ page_obj.start_index|add:forloop.counter0 }}</td>
-                        <td class="py-4 px-6 text-sm font-medium text-gray-900 textsizel">{{ order.username }}</td>
-                        <td class="py-4 px-6 text-sm text-gray-600 textsizel">
-                            {% for item in order.items %}
-                                <div>{{ item.name }} × {{ item.quantity }}</div>
-                            {% endfor %}
-                        </td>
-                        <td class="py-4 px-6 text-sm text-gray-900 textsizel text-center">{{ order.total_qty }} ชิ้น</td>
-                        <td class="py-4 px-6 text-sm font-medium text-green-700 textsizel text-right">฿{{ order.total_price }}</td>
-                        <td class="py-4 px-6 text-sm text-gray-500 textsizel">{{ order.created_at|date:"d M Y, H:i" }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="py-8 text-center text-sm text-gray-400">
-                            ยังไม่มีออร์เดอร์
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+      <div class="page-numbers">
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <span class="page-num-active">{{ num }}</span>
+          {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+            <a href="?page={{ num }}" class="page-num">{{ num }}</a>
+          {% endif %}
+        {% endfor %}
+      </div>
 
-        <!-- Pagination Controls -->
-        <div class="px-6 py-4 border-t border-gray-100 flex justify-between items-center">
-
-            <div>
-                {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}"
-                   class="px-4 py-2 text-sm border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 colblack">
-                    ← Previous
-                </a>
-                {% else %}
-                <span class="px-4 py-2 text-sm border border-gray-100 rounded-md text-gray-300 cursor-not-allowed colblack">
-                    ← Previous
-                </span>
-                {% endif %}
-            </div>
-
-            <div class="flex gap-2">
-                {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                    <span class="px-3 py-2 text-sm bg-gray-900 text-white rounded-md">{{ num }}</span>
-                    {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
-                    <a href="?page={{ num }}"
-                       class="px-3 py-2 text-sm border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
-                        {{ num }}
-                    </a>
-                    {% endif %}
-                {% endfor %}
-            </div>
-
-            <div>
-                {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}"
-                   class="px-4 py-2 text-sm border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 colblack">
-                    Next →
-                </a>
-                {% else %}
-                <span class="px-4 py-2 text-sm border border-gray-100 rounded-md text-gray-300 cursor-not-allowed colblack">
-                    Next →
-                </span>
-                {% endif %}
-            </div>
-
-        </div>
+      <div>
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}" class="page-btn">Next →</a>
+        {% else %}
+          <span class="page-btn-disabled">Next →</span>
+        {% endif %}
+      </div>
     </div>
+  </div>
 
 </div>
 </body>

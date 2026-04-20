@@ -2,61 +2,44 @@
 {% load static %}
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <title>Plants Oasis | Register</title>
-    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}?v=2">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        .max-w-md {
-            box-shadow: 4px 4px 10px rgba(12, 2, 2, 0.2);
-        }
-        .block {
-            font-size: medium !important;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Plants Oasis | Register</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}?v=2">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/form.css' %}">
 </head>
 
-<body class="bg-gray-50 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+<body>
+<div class="form-page">
+  <div class="form-card">
+    <div class="form-card-body">
+      <h2 class="form-page-title">Create Account</h2>
 
-<div class="w-full max-w-md">
-    <div class="bg-white">
-        <div class="px-8 py-10">
-            <h2 class="text-2xl font-light text-gray-900 mb-8">Create Account</h2>
+      <form method="POST">
+        {% csrf_token %}
 
-            <form method="POST" class="space-y-6">
-                {% csrf_token %}
-
-                <div>
-                    <label for="id_username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                    <input type="text" name="username" id="id_username" required
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-transparent">
-                </div>
-
-                <div>
-                    <label for="id_password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <input type="password" name="password" id="id_password" required
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-transparent">
-                </div>
-
-                <button type="submit"
-                        class="w-full bg-gray-900 text-white py-2 px-4 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-                    Create Account
-                </button>
-            </form>
-
-            <div class="mt-6 text-center">
-                <a href="{ url 'login' %}" class="text-sm text-gray-600 hover:text-gray-900">Already have an account? Login</a>
-            </div>
-
-            {% if error %}
-                <p class="mt-4 text-sm text-red-600 text-center">{{ error }}</p>
-            {% endif %}
+        <div class="form-group">
+          <label for="id_username" class="form-label">Username</label>
+          <input type="text" name="username" id="id_username" required class="form-input">
         </div>
-    </div>
-</div>
 
+        <div class="form-group">
+          <label for="id_password" class="form-label">Password</label>
+          <input type="password" name="password" id="id_password" required class="form-input">
+        </div>
+
+        <button type="submit" class="btn btn-dark btn-full">Create Account</button>
+      </form>
+
+      <div class="form-footer">
+        <a href="{% url 'login' %}">Already have an account? Login</a>
+      </div>
+
+      {% if error %}
+        <p class="form-error">{{ error }}</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
 </body>
 </html>
