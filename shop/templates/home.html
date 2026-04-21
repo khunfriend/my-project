@@ -220,6 +220,10 @@
     document.getElementById('stockInfo').textContent = 'Stock available: ' + currentPlant.stock;
     document.getElementById('quantityInput').max = currentPlant.stock;
     document.getElementById('quantityInput').value = 1;
+
+    document.getElementById('stockError').classList.add('hidden');
+    document.getElementById('stockError').textContent = '';
+    
     document.getElementById('buyModal').classList.remove('hidden');
   }
 
