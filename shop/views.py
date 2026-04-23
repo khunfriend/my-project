@@ -21,7 +21,6 @@ def dashboard(request):
         return redirect('home')
 
     orders_all = Order.objects.select_related('plant', 'user')
-    # total_orders = orders_all.count()
     total_orders = orders_all.values('order_group').distinct().count()
     total_revenue = sum(o.quantity * o.plant.price for o in orders_all)
 
